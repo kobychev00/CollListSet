@@ -42,7 +42,7 @@ public class EmployeeController {
 
     @GetMapping
     public Collection<Employee> employees() {
-        return employeeService.employees();
+        return employeeService.getAll();
     }
 
     @Bean

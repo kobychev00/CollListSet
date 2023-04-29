@@ -5,48 +5,52 @@ import com.colllistset.demo.exception.EmployeeNotFoundException;
 import com.colllistset.demo.exception.EmployeeStorageIsFullException;
 import com.colllistset.demo.model.Employee;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public class EmployeeService {
 
-    private static final int SIZE = 3;
+    private static final int LIMIT = 10;
 
-    private final Collection<Employee> employees = new ArrayList<>();
+    private final Map<String, Employee> employees = new HashMap<>();
+
+    private String getKey(String firstName, String secondName) {
+        return firstName + " " + secondName;
+    }
+
+
 
     public Employee add(String firstName, String secondName) {
-        if (employees.size() < SIZE) {
-            Employee employee = new Employee(firstName, secondName);
-            if (employees.contains(employee)) {
-                throw new EmployeeAlreadyAddedException();
-            }
-            employees.add(employee);
-            return employee;
+        if (employees.size() == LIMIT) {
+            throw new EmployeeStorageIsFullException();
         }
-        throw new EmployeeStorageIsFullException();
-
+        String key = getKey(firstName, secondName);
+        if (employees.containsKey(key)) {
+            throw new EmployeeAlreadyAddedException();
+        }
+        Employee employee = new Employee(firstName, secondName);
+        employees.put(key, employee);
+        return employee;
     }
 
     public Employee remove(String firstName, String secondName) {
-        Employee employee = new Employee(firstName, secondName);
-        if (!employees.contains(employees)) {
+        String key = getKey(firstName, secondName);
+        if (!employees.containsKey(key)) {
             throw new EmployeeNotFoundException();
         }
-        employees.remove(employee);
-        return employee;
+        return employees.remove(key);
     }
 
     public Employee find(String firstName, String secondName) {
-        Employee employee = new Employee(firstName, secondName);
-        if (!employees.contains(employees)) {
+        String key = getKey(firstName, secondName);
+        if (!employees.containsKey(key)) {
             throw new EmployeeNotFoundException();
         }
-        return employee;
+        return employees.get(key);
     }
 
-    public Collection<Employee> employees() {
-        return Collections.unmodifiableCollection(employees);
+
+    public List<Employee> getAll() {
+        return new ArrayList<>(employees.values());
     }
 
 }
